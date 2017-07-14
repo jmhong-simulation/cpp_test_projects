@@ -2,6 +2,7 @@
 #include <nana/gui/widgets/button.hpp>
 #include <nana/gui/widgets/textbox.hpp>
 #include <nana/gui/widgets/label.hpp>
+#include "nlohmann\json.hpp"
 
 #include <iostream>
 
@@ -51,9 +52,24 @@ public:
 
 };
 
+using json = nlohmann::json;
+
 int main()
 {
+	json j, j2;
 	
+	j["type"] = "int";
+	j["name"] = "x_res";
+	j["value"] = "256";
+
+	j2["variable"] = j;
+	j2["variable2"] = j;
+
+	// special iterator member functions for objects
+	for (json::iterator it = j.begin(); it != j.end(); ++it) {
+		//std::cout << it.key() << " : " << it.value() << "\n";
+		cout << it.value().get<string>() << endl;
+	}
 
 	form fm;
 	fm.caption(L"Hello, World!");
