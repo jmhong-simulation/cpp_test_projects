@@ -2,93 +2,13 @@
 #include <nana/gui/widgets/button.hpp>
 #include <nana/gui/widgets/textbox.hpp>
 #include <nana/gui/widgets/label.hpp>
-#include "nlohmann\json.hpp"
+
+#include "Scripting.h"
 
 #include <iostream>
 
 using namespace std;
 using namespace nana;
-
-namespace scripting
-{
-	typedef enum { INT, FLOAT, DOUBLE, STRING, BOOL } VariableType;
-
-	class VariableBase
-	{
-	public:
-		string name_;
-		VariableType type_;
-	};
-
-	template<class T>
-	class Variable : public VariableBase
-	{
-	public:
-		T &v_;
-
-		Variable(T& _v)
-			: v_(_v)
-		{}
-	};
-
-	class Manager
-	{
-	public:
-		map<string, VariableBase*> vars_;
-		vector<VariableBase*> vars_vec_; // to remember order
-
-		~Manager()
-		{
-			for (const auto& itr : vars_vec_)	delete itr;
-		}
-
-		void checkIntegrity(const string& name, const VariableType& vt)
-		{
-			// check if 'name' key exists
-			if (vars_.count(name) == 0) {
-				cout << __FUNCTION__ << endl;
-				cout << "Key " << name << "Not found " << endl;
-				exit(1);
-			}
-
-			// check if type is correct
-			if (vars_[name]->type_ != vt) {
-				cout << __FUNCTION__ << endl;
-				cout << "Wrong type " << endl;
-				exit(1);
-			}
-		}
-
-		//TODO: implement addNew(..., int/float/double/string/bool)
-		void addNew(const string& name, int& v)
-		{
-			if (vars_.count(name) > 0) {
-				cout << __FUNCTION__ << endl;
-				cout << "Key " << name << " already exists " << endl;
-				exit(1);
-			}
-
-			VariableBase *new_var = new Variable<int>(v);
-
-			new_var->name_ = name;
-			new_var->type_ = VariableType::INT;
-
-			vars_[name] = new_var;
-			vars_vec_.push_back(new_var);
-		}
-
-		int& getInt(const string& name)
-		{
-			checkIntegrity(name, VariableType::INT);
-
-			Variable<int> *var = (Variable<int>*)vars_[name];
-
-			return var->v_;
-		}
-
-		//TODO: getFloat, getDouble, getString, getBool
-	};
-}
 
 class TextBoxWrapper
 {
@@ -133,7 +53,7 @@ public:
 
 };
 
-using json = nlohmann::json;
+using namespace nlohmann;
 using namespace scripting;
 
 int main()
@@ -153,17 +73,28 @@ int main()
 		cout << it.value().get<string>() << endl;
 	}
 
-	int test_int;
-	Manager var_manager;
-	var_manager.addNew("zebra", test_int);
-	var_manager.addNew("test_int", test_int);
-	var_manager.getInt("test_int") = 2048;
-	cout << "test_int " << test_int << endl;
+	int test_int = 1;
+	float test_float = 2.0;
+	bool test_bool = false;
+	string test_str = "Hello, test string";
+	Category test_params("test_parameters");
+	test_params.addNew("test_int", test_int);
+	test_params.addNew("test_float", test_float);
+	test_params.addNew("test_bool", test_bool);
+	test_params.addNew("test_str", test_str);
 
-	for (const auto& itr : var_manager.vars_)
-	{
-		cout << itr.first << endl;
-	}
+	test_params.getVariable<int>("test_int") = 1024;
+	test_params.getVariable<float>("test_float") = 3.141592f;
+	test_params.getVariable<bool>("test_bool") = true;
+	test_params.getVariable<string>("test_str") = "This is string";
+
+	test_params.dump();
+
+	json params_json = test_params.getJson();
+
+	cout << params_json << endl;
+
+	cout << test_int << endl;
 
 	form fm;
 	fm.caption(L"Hello, World!");
@@ -176,7 +107,6 @@ int main()
 	//tbx.set_keywords("sqlrev", false, true, { "select", "from", "where" });*/
 	//tbx.multi_lines(false);
 	//tbx.events().key_release(foo);
-
 
 	// add a button
 	button btn(fm, rectangle{ 20, 50, 150, 30 });
