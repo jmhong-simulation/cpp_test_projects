@@ -91,6 +91,8 @@ namespace binding
 			js["type"] = this->type_;
 			js["address"] = void_ptr_to_address_string(void_ptr_);
 
+			cout << name_ << " " << type_ << " " << void_ptr_ << " " << void_ptr_to_address_string(void_ptr_) << endl;
+
 			return js;
 		}
 
@@ -127,6 +129,13 @@ namespace binding
 			sprintf((char*)&void_ptr_back, add_str.c_str());
 
 			return void_ptr_back;
+		}
+
+		typedef typename void * void_ptr_type;
+
+		static void address_string_to_void_ptr(const string& add_str, void_ptr_type& void_ptr_back)
+		{
+			sprintf((char*)&void_ptr_back, add_str.c_str());
 		}
 	};
 }
