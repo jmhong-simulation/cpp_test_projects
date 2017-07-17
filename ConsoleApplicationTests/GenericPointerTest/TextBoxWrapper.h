@@ -23,57 +23,116 @@ namespace ui
 	class TextBoxWrapper : public WidgetBase
 	{
 	public:
-		textbox tbx_;	// (fm, rectangle{ 20, 20, 150, 30 });
-		label lab_;
+		label	type_label_;
+		textbox name_label_;
+		textbox input_tbx_;
+		label	value_label_;
+
 		T &var_;		// reference to the variable that should be updated when text_ is edited
 
-		TextBoxWrapper(const form& _fm, const rectangle& _rect_label, const rectangle& _rect_textbox, const string& label_str, T& _var)
-			: lab_(_fm, _rect_label), tbx_(_fm, _rect_textbox), var_(_var)
+		TextBoxWrapper(const form& _fm, const rectangle& _rect_type, const rectangle& _rect_label, const rectangle& _rect_textbox, 
+					  const rectangle& _rect_value, const string& name_str, T& _var)
+			: type_label_(_fm, _rect_type), name_label_(_fm, _rect_label), input_tbx_(_fm, _rect_textbox), value_label_(_fm, _rect_value), var_(_var)
 		{
-
-			//cout << var_ << endl;
-
-			lab_.caption(label_str);
-			lab_.text_align(align::left, align_v::center);
+			type_label_.caption(getShortTypeName<T>());
+			type_label_.text_align(align::right);
+			/*type_label_.fgcolor(nana::colors::black);*/
 			
-			tbx_.multi_lines(false);
-			tbx_.caption(lexical_cast<string>(var_));	// default value
-			tbx_.events().text_changed([&](const nana::arg_textbox& a_b) {
+			//type_label_.bgcolor(nana::colors::white_smoke);
+
+			name_label_.caption(name_str);
+			name_label_.text_align(align::center);
+			name_label_.fgcolor(nana::colors::black);
+			name_label_.bgcolor(nana::colors::papaya_whip);
+			name_label_.editable(false);
+			name_label_.enabled(false);
+			name_label_.select(false);
+
+			input_tbx_.multi_lines(false);
+			input_tbx_.caption(lexical_cast<string>(var_));	// default value
+			/*input_tbx_.events().text_changed([&](const nana::arg_textbox& a_b) {
 				string text;
 				a_b.widget.getline(0, text);
 				str_to_value(text, var_);
+
+				value_label_.caption(lexical_cast<string>(var_));
+			});*/
+
+			// Enter apply changes, ESC undo
+			input_tbx_.events().key_release([&](const nana::arg_keyboard& ak) {
+				if (ak.key == 13)    // 'Enter' apply changes
+				{
+					string text;
+					input_tbx_.getline(0, text);
+
+					if (str_to_value(text, var_))
+					{
+						value_label_.caption(lexical_cast<string>(var_));
+					}
+				}
+				else if(ak.key == 27)	// 'ESC' undo changes
+				{
+					input_tbx_.caption(lexical_cast<string>(var_));
+					
+					//TODO: move cursor to the last of text
+				}
 			});
+
+			// Double click selects all text
+			input_tbx_.events().dbl_click([&](const nana::arg_mouse& am) {
+				input_tbx_.select(true);
+			});
+
+			value_label_.caption(lexical_cast<string>(var_));
+			value_label_.text_align(align::left, align_v::center);
 		}
 
 		~TextBoxWrapper()
 		{
-			cout << "destructor" << endl;
+			//cout << "destructor" << endl;
 		}
 
 		template<class T>
-		void str_to_value(const string& str, T& v)
+		bool str_to_value(const string& str, T& v)
 		{
 			T backup = v;
-			try { v = lexical_cast<T>(str); }
-			catch (const bad_lexical_cast &) { v = backup; } // roll back
+
+			try 
+			{
+				v = lexical_cast<T>(str); 
+			}
+			catch (const bad_lexical_cast &)
+			{
+				v = backup; 
+
+				return false; 
+			} // roll back
+
+			return true;
+		}
+
+		template<class T>
+		string getShortTypeName()
+		{
+			if (typeid(T).name() == typeid(int).name()) return "int";
+			else if (typeid(T).name() == typeid(float).name()) return "float";
+			else if (typeid(T).name() == typeid(double).name()) return "double";
+			else if (typeid(T).name() == typeid(bool).name()) return "bool";
+			else if (typeid(T).name() == typeid(string).name()) return "string";
+			else FATAL_ERROR("Not defined type name " << typeid(T).name());
 		}
 	};
 
 	// factory
-	static WidgetBase* getNewTextBoxWrapper(const string& name, const string& type, const string& ptr_str, const form& fm, const rectangle& _rect_label, const rectangle& _rect_textbox)
+	static WidgetBase* getNewTextBoxWrapper(const string& name, const string& type, const string& ptr_str, const form& fm, 
+											const rectangle& _rect_type, const rectangle& _rect_label, const rectangle& _rect_textbox, const rectangle& _value_label)
 	{
-		/*cout << __FUNCTION__ << endl;
-
-		int* ptr = (int*)WidgetBase::address_string_to_void_ptr(ptr_str);
-		cout << "Retrieve test " << __FUNCTION__ << endl << *ptr << endl;*/
-		//exit(1);
-
 		if (WidgetBase::isType<int>(type))
 		{
 			int *ptr = nullptr;		// these took 1 hour debugging. string to ptr
 			sprintf((char*)&ptr, ptr_str.c_str());
 
-			WidgetBase *new_widget = new TextBoxWrapper<int>(fm, _rect_label, _rect_textbox, string("int ") + name, *ptr);
+			WidgetBase *new_widget = new TextBoxWrapper<int>(fm, _rect_type, _rect_label, _rect_textbox, _value_label, name, *ptr);
 
 			return new_widget;
 		}
@@ -82,7 +141,7 @@ namespace ui
 			float *ptr = nullptr;		// these took 1 hour debugging. string to ptr
 			sprintf((char*)&ptr, ptr_str.c_str());
 
-			WidgetBase *new_widget = new TextBoxWrapper<float>(fm, _rect_label, _rect_textbox, string("float ") + name, *ptr);
+			WidgetBase *new_widget = new TextBoxWrapper<float>(fm, _rect_type, _rect_label, _rect_textbox, _value_label, name, *ptr);
 
 			return new_widget;
 		}
@@ -91,7 +150,7 @@ namespace ui
 			double *ptr = nullptr;		// these took 1 hour debugging. string to ptr
 			sprintf((char*)&ptr, ptr_str.c_str());
 
-			WidgetBase *new_widget = new TextBoxWrapper<double>(fm, _rect_label, _rect_textbox, string("double ") + name, *ptr);
+			WidgetBase *new_widget = new TextBoxWrapper<double>(fm, _rect_type, _rect_label, _rect_textbox, _value_label, name, *ptr);
 
 			return new_widget;
 		}
@@ -100,7 +159,7 @@ namespace ui
 			bool *ptr = nullptr;		// these took 1 hour debugging. string to ptr
 			sprintf((char*)&ptr, ptr_str.c_str());
 
-			WidgetBase *new_widget = new TextBoxWrapper<bool>(fm, _rect_label, _rect_textbox, string("bool ") + name, *ptr);
+			WidgetBase *new_widget = new TextBoxWrapper<bool>(fm, _rect_type, _rect_label, _rect_textbox, _value_label, name, *ptr);
 
 			return new_widget;
 		}
@@ -109,7 +168,7 @@ namespace ui
 			string *ptr = nullptr;		// these took 1 hour debugging. string to ptr
 			sprintf((char*)&ptr, ptr_str.c_str());
 
-			WidgetBase *new_widget = new TextBoxWrapper<string>(fm, _rect_label, _rect_textbox, string("string ") + name, *ptr);
+			WidgetBase *new_widget = new TextBoxWrapper<string>(fm, _rect_type, _rect_label, _rect_textbox, _value_label, name, *ptr);
 
 			return new_widget;
 		}

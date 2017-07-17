@@ -26,36 +26,22 @@ namespace ui
 		ParametersControlForm(const string& title)
 		{
 			fm.caption(title);
-
-			nana::size screen_size(screen::primary_monitor_size());
-			nana::size form_size(800, 1000);		// determine by number of inputs
-
-			fm.size(form_size);
-			fm.move((screen_size.width - form_size.width)/2, (screen_size.height - form_size.height) / 2);
-
-			int test_int = 1234;
-			//float test_f = 3.14;
-			//string test_str = "Hello, JM";
-			//bool  test_bool = true;
-
-			////TODO: use polymorphism
-			////TODO: use json to automatically initialize these
-			//TextBoxWrapper<int> tbx(fm, rectangle{ 20, 30, 60, 20 }, rectangle{ 100, 30, 100, 20 }, "int test_int", test_int);
-			//TextBoxWrapper<float> tbx2(fm, rectangle{ 20, 50, 60, 20 }, rectangle{ 100, 41, 100, 20 }, "float test_f", test_f);
-			//TextBoxWrapper<string> tbx3(fm, rectangle{ 20, 75, 60, 20 }, rectangle{ 100, 62, 100, 20 }, "string test_str", test_str);
-			//TextBoxWrapper<bool> tbx4(fm, rectangle{ 20, 100, 60, 20 }, rectangle{ 100, 83, 100, 20 }, "bool test_bool", test_bool);
-
-			//cout << test_int << endl;
-			//cout << test_f << endl;
-			//cout << test_str << endl;
-			//cout << test_bool << endl;
 		}
 
 		~ParametersControlForm()
 		{
-			cout << __FUNCTION__ << endl;
+			//cout << __FUNCTION__ << endl;
 
 			freeWidgets();
+		}
+
+		void resize_and_move_to_center(const nana::size& new_size)
+		{
+			nana::size screen_size(screen::primary_monitor_size());
+			nana::size form_size(new_size);		// determine by number of inputs
+
+			fm.size(form_size);
+			fm.move((screen_size.width - form_size.width) / 2, (screen_size.height - form_size.height) / 2);
 		}
 
 		void freeWidgets()
@@ -70,67 +56,51 @@ namespace ui
 		}
 
 		void addVariablesGroup(const json& vars_js)
-		{
-			//{
-			//	const json js2 = vars_js;
-
-			//	const vector<json> js_temp = js2["variables"];
-			//	const json js_var = js_temp[0].get<json>(); // do not skip this step!
-
-			//	const string str = js_var["address"].get<string>();
-
-			//	int* ptr = (int*)WidgetBase::address_string_to_void_ptr(str);
-
-			//	cout << "Retrieve test " << __FUNCTION__ << endl << *ptr << endl;
-
-			//	exit(1);
-			//}
-
+		{			
 			const string category_name = vars_js["category"].get<string>();
 			const vector<json> jsvars_vec = vars_js["variables"].get<vector<json>>();
-			//const vector<json> jsvars_vec = vars_js["variables"];
 
-			/*{
-				const json js_var = jsvars_vec[0].get<json>();
-				const string str = js_var["address"].get<string>();
-				cout << "size of str " << str.size() << endl;
-				int* ptr = (int*)WidgetBase::address_string_to_void_ptr(str);
-				cout << "Retrieve test " << __FUNCTION__ << endl << *ptr << endl;
-				exit(1);
-			}*/
+			const int compt_height = 20;
+			const int com0_width = 50;
+			const int com1_width = 150;
+			const int com2_width = 100;
+			const int com3_width = 100;
+			const int h_border = 10;
+			const int w_border = 10;
+			const int l_border = 10; // left border from window
 
-			/*cout << "Category name " << category_name << endl;
-			cout << jsvars_vec.size() << endl;*/
-
-
-			int count = 0;
-			for(int i = 0; i < jsvars_vec.size(); ++i)
+			for(int count = 0; count < jsvars_vec.size(); ++count)
 			{
-				const json var_js = jsvars_vec[i].get<json>();		// do not skip this step (do not use itr of jsvars_vec)
+				const json var_js = jsvars_vec[count].get<json>();		// do not skip this step (do not use itr of jsvars_vec)
 
 				const string name = var_js["name"].get<string>();
 				const string type = var_js["type"].get<string>();
 				const string ptr_str = var_js["address"].get<string>();
 
-				/*int* ptr = (int*)WidgetBase::address_string_to_void_ptr(ptr_str);
-				cout << "Retrieve test " << __FUNCTION__ << endl << *ptr << endl;
-				exit(1);*/
+				int x_pos = l_border;
+				const rectangle type_rect = rectangle{ x_pos, h_border + count * (compt_height + h_border), (unsigned)com0_width, (unsigned)compt_height };
+				x_pos += com0_width + w_border;
+				const rectangle label_rect = rectangle{ x_pos, h_border + count * (compt_height + h_border), (unsigned)com1_width, (unsigned)compt_height };
+				x_pos += com1_width + w_border;
+				const rectangle txt_rect = rectangle{ x_pos, h_border + count * (compt_height + h_border), (unsigned)com2_width, (unsigned)compt_height };
+				x_pos += com2_width + w_border;
+				const rectangle value_rect = rectangle{ x_pos, h_border + count * (compt_height + h_border), (unsigned)com3_width, (unsigned)compt_height };
 
-				const rectangle label_rect = rectangle{ 20, count * 30 + 20, 60, 20 };
-				const rectangle txt_rect = rectangle{ 100, count * 30 + 20, 100, 20 };
+				WidgetBase *new_widget = getNewTextBoxWrapper(name, type, ptr_str, fm, type_rect, label_rect, txt_rect, value_rect);
 
-				WidgetBase *new_widget = getNewTextBoxWrapper(name, type, ptr_str, fm, label_rect, txt_rect);
 				widgets_.push_back(new_widget);
-
-				count++;
 			}
+			
+			const int total_width = l_border + com0_width + w_border + com1_width + w_border + com2_width + w_border + com3_width + l_border;
+			const int total_height = h_border + (compt_height + h_border)* jsvars_vec.size() + h_border;
+
+			resize_and_move_to_center(nana::size(total_width, total_height));
 		}
 
 		void show_and_exec()
 		{
 			fm.show();
 			nana::exec();
-			freeWidgets();
 		}
 	};
 

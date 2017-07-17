@@ -90,10 +90,24 @@ namespace binding
 			js["name"] = this->name_;
 			js["type"] = this->type_;
 			js["address"] = void_ptr_to_address_string(void_ptr_);
+			js["value"] = getStringValue();		// for save/load by json files
 
-			cout << name_ << " " << type_ << " " << void_ptr_ << " " << void_ptr_to_address_string(void_ptr_) << endl;
+			//cout << name_ << " " << type_ << " " << void_ptr_ << " " << void_ptr_to_address_string(void_ptr_) << endl;
 
 			return js;
+		}
+
+		void setFromJson(const json& js)
+		{
+			const string name_str = js["name"];
+			const string type_str = js["type"];
+
+			if (name_str != name_) FATAL_ERROR("Different name " << name_str << " " << name_);
+			if (type_str != type_) FATAL_ERROR("Different type " << type_str << " " << type_);
+
+			const string value_str = js["value"];
+
+			setValueByString(value_str);
 		}
 
 	public: // helper functions

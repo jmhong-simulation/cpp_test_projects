@@ -23,7 +23,7 @@ int main()
 	// ... copying, sending pointer to somewhere else.
 
 	// restore void pointer from string
-	void *ptr_back;
+	void *ptr_back = nullptr;
 	sprintf((char*)&ptr_back, ptr_str.c_str());
 
 	cout << ptr_back << endl;

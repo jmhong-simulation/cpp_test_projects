@@ -12,7 +12,7 @@ namespace ui
 
 		virtual ~WidgetBase() // virtual destructor is necessary to cleanup child classes under polymorphysm
 		{
-			cout << __FUNCTION__ << endl;
+			//cout << __FUNCTION__ << endl;
 		}
 
 		template<class T>
