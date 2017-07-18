@@ -30,9 +30,9 @@ int main()
 
 	// builtins! https://stackoverflow.com/questions/22674774/get-single-element-from-a-boostpythonobject-list-for-use-in-python-routine
 	// there are more of good examples
-	py::object print = py::import("__main__").attr("__builtins__").attr("print"); 
+	py::object print = py::import("__main__").attr("__builtins__").attr("print");
 	print("Hello, Python");
-	
+
 	// examples from https://www.datacamp.com/community/tutorials/tensorflow-tutorial#gs.7CN1YdQ
 
 	const py::object tf_ = py::import("tensorflow");
@@ -50,6 +50,6 @@ int main()
 
 	sess.attr("close")();
 
-    return 0;
+	return 0;
 }
 
