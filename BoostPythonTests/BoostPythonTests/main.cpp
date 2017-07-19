@@ -1,12 +1,25 @@
 // BoostPythonTests.cpp : Defines the entry point for the console application.
 //
 
+#include <iostream>
+#include <string>
+
 #define BOOST_PYTHON_STATIC_LIB
 #define BOOST_LIB_NAME "boost_numpy"
 #include <boost/config/auto_link.hpp>
 #include <boost/python.hpp>
 #include <boost/python/numpy.hpp>
-#include <iostream>
+
+// from http://stackoverflow.com/questions/1418015/how-to-get-python-exception-text
+#define PY_TRY			try {
+#define PY_CATCH		} catch (py::error_already_set &) \
+						{\
+							if (PyErr_Occurred()) {\
+								std::string msg = pyw.handle_pyerror();\
+								std::cout << msg << std::endl;\
+								exit(1);\
+						} /*py_exception = true;bp::handle_exception();PyErr_Clear();*/ \
+						}
 
 namespace pycpp
 {
@@ -24,7 +37,7 @@ namespace pycpp
 		py::object sys_;
 		py::object print_;
 
-		PythonCpp(wchar_t* home_path = L"C:/Anaconda3/envs/py35tf1")
+		PythonCpp(wchar_t* home_path = L"C:/Anaconda3/envs/py35tf12")
 		{
 			Py_SetPythonHome(home_path);
 
@@ -32,12 +45,13 @@ namespace pycpp
 			np::initialize();
 
 			main_module_ = py::import("__main__");
-			main_namespace_ = main_module_.attr("__dict__");
-			builtins_ = main_module_.attr("__builtins__");
+			main_namespace_ = main_module_.attr("__dict__");			
 			sys_ = py::import("sys");
+			builtins_ = main_module_.attr("__builtins__");
 			print_ = builtins_.attr("print");
 
-			
+			PyRun_SimpleString("import sys\n"
+				"sys.argv = ['']"); // Tensorflow requires this to be initialized
 		}
 
 		string version() const
@@ -51,6 +65,28 @@ namespace pycpp
 		void print(Args ... args) const
 		{
 			this->print_(args ...);
+		}
+
+		std::string handle_pyerror()
+		{
+			using namespace boost::python;
+			using namespace boost;
+
+			PyObject *exc, *val, *tb;
+			object formatted_list, formatted;
+			PyErr_Fetch(&exc, &val, &tb);
+			handle<> hexc(exc), hval(allow_null(val)), htb(allow_null(tb));
+			object traceback(import("traceback"));
+			if (!tb) {
+				object format_exception_only(traceback.attr("format_exception_only"));
+				formatted_list = format_exception_only(hexc, hval);
+			}
+			else {
+				object format_exception(traceback.attr("format_exception"));
+				formatted_list = format_exception(hexc, hval, htb);
+			}
+			formatted = str("\n").join(formatted_list);
+			return extract<std::string>(formatted);
 		}
 	};
 
@@ -67,9 +103,14 @@ namespace pycpp
 	class TensorflowCpp
 	{
 	public:
-		const py::object tf_ = py::import("tensorflow");
-		const py::object sess_ = tf_.attr("Session")();
+		py::object tf_;
+		py::object sess_;
 
+		TensorflowCpp()
+		{
+			tf_ = py::import("tensorflow");
+			sess_ = tf_.attr("Session")();
+		}
 
 		template<typename ... Args>
 		py::object run(Args ... args)
@@ -103,16 +144,16 @@ namespace pycpp
 	};
 }
 
-int main()
+// https://stackoverflow.com/questions/41323576/attributeerror-due-to-sys-argv0-for-import-tensorflow-as-tf-inside-c
+// tensorflow needs sys.argv.
+
+int main(int argc, char *argv[])
 {
 	using namespace pycpp;
 
 	PythonCpp pyw;
 
 	cout << pyw.version() << endl;
-
-	pyw.print_("Hello, Python");
-	pyw.print("Hello, Python", 1234, 1234 * 2);
 
 	// examples from https://www.datacamp.com/community/tutorials/tensorflow-tutorial#gs.7CN1YdQ
 
@@ -122,7 +163,15 @@ int main()
 	pyw.print(d1);
 	pyw.print(d2);
 
+	auto os = py::import("os");
+	pyw.print(os.attr("getcwd")());
+	os.attr("chdir")("C:/Anaconda3/envs/py35tf12");
+	pyw.print(os.attr("getcwd")());
+
+	pyw.sys_.attr("path").attr("append")("C:/Anaconda3/envs/py35tf12");
+
 	TensorflowCpp tfc;
+
 	const auto x1 = tfc.constant(d1);
 	const auto x2 = tfc.constant(d2);
 
@@ -139,15 +188,30 @@ int main()
 	pyw.print("Add result ", result);
 
 	py::list nodes;
-	nodes.append(mult);
-	nodes.append(add);
+	
+	PY_TRY{
+		nodes.append(mult);
+		nodes.append(add);
+	}PY_CATCH;
 
-	//result = tfc.run(nodes);
+	pyw.print(nodes);
 
-	auto result_list = py::extract<py::list>(tfc.run(nodes));
+	auto result_list = tfc.run(nodes);
 
 	pyw.print(result_list);
+	pyw.print(pyw.builtins_.attr("type")(result_list));
 
+	py::list rl = py::extract<py::list>(result_list);
+
+	cout << py::len(rl) << endl;
+
+	for (int i = 0; i < py::len(rl); ++i)
+	{
+		pyw.print(pyw.builtins_.attr("type")(py::object(rl[i])));
+		const np::ndarray arr = py::extract<np::ndarray>(rl[i]);
+		
+		pyw.print(arr);
+	}
 
     return 0;
 }
