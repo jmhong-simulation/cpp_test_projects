@@ -68,6 +68,20 @@ namespace pycpp
 	{
 	public:
 		const py::object tf_ = py::import("tensorflow");
+		const py::object sess_ = tf_.attr("Session")();
+
+
+		template<typename ... Args>
+		py::object run(Args ... args)
+		{
+			return sess_.attr("run")(args ...);
+		}
+
+		template<typename ... Args>
+		py::object add(Args ... args)
+		{
+			return tf_.attr("add")(args ...);
+		}
 
 		template<typename ... Args>
 		py::object constant(Args ... args)
@@ -100,8 +114,6 @@ int main()
 	pyw.print_("Hello, Python");
 	pyw.print("Hello, Python", 1234, 1234 * 2);
 
-
-
 	// examples from https://www.datacamp.com/community/tutorials/tensorflow-tutorial#gs.7CN1YdQ
 
 	const np::ndarray d1 = pycpp::NumpyCpp::make_array(1.0f, 2.0f, 3.0f, 4.0f);
@@ -115,10 +127,27 @@ int main()
 	const auto x2 = tfc.constant(d2);
 
 	const auto mult = tfc.multiply(x1, x2);
-	const auto sess = tfc.Session();
-	const auto result = sess.attr("run")(mult); //TODO: run session to nodes, receive results as list.
-	
-	pyw.print(result);
+	pyw.print(mult);
+
+	const auto add = tfc.add(x1, x2);
+	pyw.print(add);
+
+	auto result = tfc.run(mult);
+	pyw.print("Mult result ", result);
+
+	result = tfc.run(add);
+	pyw.print("Add result ", result);
+
+	py::list nodes;
+	nodes.append(mult);
+	nodes.append(add);
+
+	//result = tfc.run(nodes);
+
+	auto result_list = py::extract<py::list>(tfc.run(nodes));
+
+	pyw.print(result_list);
+
 
     return 0;
 }
