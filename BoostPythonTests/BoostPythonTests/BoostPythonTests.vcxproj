@@ -101,10 +101,12 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>D:\boost\boost_1_63_0;C:\Anaconda3\envs\py35tf1\include;%(AdditionalIncludeDirectories);$(VcpkgRoot)include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>c:\Anaconda3\envs\py35tf1\libs;D:\boost\boost_1_63_0\stage\lib;%(AdditionalLibraryDirectories);$(VcpkgRoot)debug\lib;$(VcpkgRoot)debug\lib\manual-link</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

@@ -8,47 +8,117 @@
 #include <boost/python/numpy.hpp>
 #include <iostream>
 
-// for conveinece.
-namespace py = boost::python;
-namespace np = boost::python::numpy;
-
-int main()
+namespace pycpp
 {
 	using namespace std;
 
-	Py_SetPythonHome(L"C:/Anaconda3/envs/py35tf1");
+	namespace py = boost::python;
+	namespace np = boost::python::numpy;
 
-	Py_Initialize();
-	np::initialize();
+	class PythonCpp
+	{
+	public:
+		py::object main_module_;
+		py::object main_namespace_;
+		py::object builtins_;
+		py::object sys_;
+		py::object print_;
 
-	py::object main_module = py::import("__main__");
-	py::object main_namespace = main_module.attr("__dict__");
+		PythonCpp(wchar_t* home_path = L"C:/Anaconda3/envs/py35tf1")
+		{
+			Py_SetPythonHome(home_path);
 
-	py::object sys_ = py::import("sys");
-	std::string version = py::extract<std::string>(sys_.attr("version"));
-	std::cout << version << std::endl;
+			Py_Initialize();
+			np::initialize();
 
-	// builtins! https://stackoverflow.com/questions/22674774/get-single-element-from-a-boostpythonobject-list-for-use-in-python-routine
-	// there are more of good examples
-	py::object print = py::import("__main__").attr("__builtins__").attr("print"); 
-	print("Hello, Python");
-	
+			main_module_ = py::import("__main__");
+			main_namespace_ = main_module_.attr("__dict__");
+			builtins_ = main_module_.attr("__builtins__");
+			sys_ = py::import("sys");
+			print_ = builtins_.attr("print");
+
+			
+		}
+
+		string version() const
+		{
+			return py::extract<std::string>(sys_.attr("version"));			
+		}
+
+		// let's simply use print_(...) because this makes compile overhead unnecessarily.
+		// However, it's happy to see working.
+		template<typename ... Args>
+		void print(Args ... args) const
+		{
+			this->print_(args ...);
+		}
+	};
+
+	class NumpyCpp
+	{
+	public:
+		template<typename ... Args>
+		static np::ndarray make_array(Args ... args)
+		{
+			return np::array(py::make_tuple(args ...));
+		}
+	};
+
+	class TensorflowCpp
+	{
+	public:
+		const py::object tf_ = py::import("tensorflow");
+
+		template<typename ... Args>
+		py::object constant(Args ... args)
+		{
+			return tf_.attr("constant")(args ...);
+		}
+
+		template<typename ... Args>
+		py::object multiply(Args ... args)
+		{
+			return tf_.attr("multiply")(args ...);
+		}
+
+		template<typename ... Args>
+		py::object Session(Args ... args)
+		{
+			return tf_.attr("Session")(args ...);
+		}
+	};
+}
+
+int main()
+{
+	using namespace pycpp;
+
+	PythonCpp pyw;
+
+	cout << pyw.version() << endl;
+
+	pyw.print_("Hello, Python");
+	pyw.print("Hello, Python", 1234, 1234 * 2);
+
+
+
 	// examples from https://www.datacamp.com/community/tutorials/tensorflow-tutorial#gs.7CN1YdQ
 
-	const py::object tf_ = py::import("tensorflow");
+	const np::ndarray d1 = pycpp::NumpyCpp::make_array(1.0f, 2.0f, 3.0f, 4.0f);
+	const np::ndarray d2 = pycpp::NumpyCpp::make_array(5.0f, 6.0f, 7.0f, 8.0f);
 
-	const np::ndarray d1 = np::array(py::make_tuple(1.0f, 2.0f, 3.0f, 4.0f));
-	const np::ndarray d2 = np::array(py::make_tuple(5.0f, 6.0f, 7.0f, 9.0f));
+	pyw.print(d1);
+	pyw.print(d2);
 
-	const py::object x1 = tf_.attr("constant")(d1);
-	const py::object x2 = tf_.attr("constant")(d2);
+	TensorflowCpp tfc;
+	const auto x1 = tfc.constant(d1);
+	const auto x2 = tfc.constant(d2);
 
-	const py::object result = tf_.attr("multiply")(x1, x2);
-	const py::object sess = tf_.attr("Session")();
-
-	print(sess.attr("run")(result));
-
-	sess.attr("close")();
+	const auto mult = tfc.multiply(x1, x2);
+	const auto sess = tfc.Session();
+	const auto result = sess.attr("run")(mult); //TODO: run session to nodes, receive results as list.
+	
+	pyw.print(result);
 
     return 0;
 }
