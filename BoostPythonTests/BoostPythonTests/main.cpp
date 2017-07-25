@@ -10,6 +10,7 @@
 #include <boost/python.hpp>
 #include <boost/python/numpy.hpp>
 
+
 // from http://stackoverflow.com/questions/1418015/how-to-get-python-exception-text
 #define PY_TRY			try {
 #define PY_CATCH		} catch (py::error_already_set &) \
@@ -52,6 +53,8 @@ namespace pycpp
 
 			PyRun_SimpleString("import sys\n"
 				"sys.argv = ['']"); // Tensorflow requires this to be initialized
+
+			//sys_.attr("path").attr("append")("C:/Anaconda3/envs/py35tf12");
 		}
 
 		string version() const
@@ -65,6 +68,12 @@ namespace pycpp
 		void print(Args ... args) const
 		{
 			this->print_(args ...);
+		}
+
+		template<typename ... Args>
+		py::object type(Args ... args) const
+		{
+			return builtins_.attr("type")(args ...);
 		}
 
 		std::string handle_pyerror()
@@ -144,6 +153,20 @@ namespace pycpp
 	};
 }
 
+namespace deeplearning
+{
+	class NeuralNetwork
+	{
+	public:
+		boost::python::object backend_;	// tensorflow, maybe
+
+		/*void forward(numpy) {}
+		void backward(numpy) {}*/
+	};
+
+	// implement higher level NN and use PyNeuralNetwork ? of TensorflowNeuralNetwork ?
+}
+
 // https://stackoverflow.com/questions/41323576/attributeerror-due-to-sys-argv0-for-import-tensorflow-as-tf-inside-c
 // tensorflow needs sys.argv.
 
@@ -169,9 +192,16 @@ int main(int argc, char *argv[])
 	pyw.print(os.attr("getcwd")());
 
 	pyw.sys_.attr("path").attr("append")("C:/Anaconda3/envs/py35tf12");
+	pyw.sys_.attr("path").attr("append")("D:\\github-repository\\cpp_test_projects\\BoostPythonTests\\BoostPythonTests");
+
+	auto jm_module = py::import("JMModule");
+	jm_module.attr("test_func")();
+
+	return 0;
 
 	TensorflowCpp tfc;
 
+	// simple tensorflow test
 	const auto x1 = tfc.constant(d1);
 	const auto x2 = tfc.constant(d2);
 
@@ -211,6 +241,52 @@ int main(int argc, char *argv[])
 		const np::ndarray arr = py::extract<np::ndarray>(rl[i]);
 		
 		pyw.print(arr);
+	}
+	
+	// tensorflow None shape test
+	{
+		py::list shape;
+		shape.append(py::eval("None"));
+		shape.append(1);
+		shape.append(1);
+
+		// nodes
+		py::object f32 = tfc.tf_.attr("float32");
+		py::object x_input = tfc.tf_.attr("placeholder")(f32, shape);
+		py::object y_target = tfc.tf_.attr("placeholder")(f32, shape);
+		py::object temp = tfc.tf_.attr("layers").attr("dense")(x_input, 1);
+		py::object loss = tfc.tf_.attr("losses").attr("mean_squared_error")(temp, y_target);
+		py::object train = tfc.tf_.attr("train").attr("AdamOptimizer")(1e-1).attr("minimize")(loss);
+
+		np::dtype dtype32 = np::dtype::get_builtin<float>();
+		np::ndarray x_data = np::zeros(py::make_tuple(1, 1, 1), dtype32);
+		((float*)(x_data.get_data()))[0] = 1.0f;
+		np::ndarray y_data = np::zeros(py::make_tuple(1, 1, 1), dtype32);
+		((float*)(y_data.get_data()))[0] = 1.0f;
+
+		py::object init_op = tfc.tf_.attr("global_variables_initializer")();
+
+		tfc.sess_.attr("run")(init_op);
+
+		py::list nodes_to_run;
+		nodes_to_run.append(temp);
+		nodes_to_run.append(loss);
+		nodes_to_run.append(train);
+
+		py::dict feed_dict;
+		feed_dict[x_input] = x_data;
+		feed_dict[y_target] = y_data;
+
+		for(int i = 0; i < 10; ++i)
+		{
+			py::list output = py::extract<py::list>(tfc.sess_.attr("run")(nodes_to_run, feed_dict));
+			py::object y_out_obj = py::extract<py::object>(output[0]);			
+			const np::ndarray y_out = np::from_object(y_out_obj);
+			const float loss = py::extract<float>(output[1]);
+
+			cout << ((float*)y_out.get_data())[0] << " ";
+			cout << loss << endl;
+		}
 	}
 
     return 0;
