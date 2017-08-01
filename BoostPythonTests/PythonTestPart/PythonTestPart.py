@@ -3,25 +3,43 @@ import numpy as np
 
 sess = tf.InteractiveSession()
 
-input = tf.placeholder(tf.float32, [None, 1, 1])
-target = tf.placeholder(tf.float32, [None, 1, 1])
+input = tf.placeholder(tf.float32, [None, 1])
+target = tf.placeholder(tf.float32, [None, 1])
+
 
 pp = (input, 1)
 print(type(pp))
 
-ka = {'activation' : tf.nn.tanh}
+ka = {'inputs' : input, 'units' : 1, 'activation' : tf.nn.tanh}
 print(type(ka))
 
 def run_with_pos_key(positional, keywords, function):
     return function(*positional, **keywords)
 
-temp = run_with_pos_key(pp, ka, tf.layers.dense) # equavalent to temp = tf.layers.dense(*pp, **ka)
-#temp = tf.layers.dense(inputs = input, units = 1, activation = tf.nn.tanh)
-loss = tf.losses.mean_squared_error(target, temp)
+#temp = run_with_pos_key(pp, ka, tf.layers.dense) 
+temp = tf.layers.dense(**ka)
+print(temp)
+
+# 1. default way
+# temp = tf.layers.dense(inputs = input, units = 1, activation = tf.nn.tanh)
+
+# 2. using positional/keyword argumetns
+# pp = (input, 1)
+# print(type(pp))
+# ka = {'activation' : tf.nn.tanh}
+# print(type(ka))
+# temp = tf.layers.dense(*pp, **ka)
+
+# 3. using executer function
+# def run_with_pos_key(positional, keywords, function):
+#    return function(*positional, **keywords)
+# temp = run_with_pos_key(pp, ka, tf.layers.dense) 
+
+loss = tf.losses.mean_squared_error(*(target, temp))
 train = tf.train.AdamOptimizer(1e-1).minimize(loss)
 
-x_input = np.ones((1, 1, 1), 'f')
-y_target = np.ones((1, 1, 1), 'f')
+x_input = np.ones((1, 1), 'f')
+y_target = np.ones((1, 1), 'f')
 
 init_op = tf.global_variables_initializer()
 sess.run(init_op)

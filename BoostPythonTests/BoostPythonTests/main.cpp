@@ -195,9 +195,9 @@ int main(int argc, char *argv[])
 	pyw.sys_.attr("path").attr("append")("D:\\github-repository\\cpp_test_projects\\BoostPythonTests\\BoostPythonTests");
 
 	auto jm_module = py::import("JMModule");
-	//jm_module.attr("test_func")();
+	jm_module.attr("test_func")();
 
-	return 0;
+	//return 0;
 
 	TensorflowCpp tfc;
 
@@ -252,13 +252,13 @@ int main(int argc, char *argv[])
 
 		// nodes
 		py::object f32 = tfc.tf_.attr("float32");
-		py::object x_input = tfc.tf_.attr("placeholder")(f32, shape);
-		py::object y_target = tfc.tf_.attr("placeholder")(f32, shape);
-		py::object temp = tfc.tf_.attr("layers").attr("dense")(x_input, 1);
-		py::object loss = tfc.tf_.attr("losses").attr("mean_squared_error")(temp, y_target);
+		py::object x_input_ph = tfc.tf_.attr("placeholder")(f32, shape);
+		py::object y_target_ph = tfc.tf_.attr("placeholder")(f32, shape);
+		py::object y_out = tfc.tf_.attr("layers").attr("dense")(x_input_ph, 1);
+		py::object loss = tfc.tf_.attr("losses").attr("mean_squared_error")(y_out, y_target_ph);
 		py::object train = tfc.tf_.attr("train").attr("AdamOptimizer")(1e-1).attr("minimize")(loss);
 
-		np::dtype dtype32 = np::dtype::get_builtin<float>();
+		const np::dtype dtype32 = np::dtype::get_builtin<float>();
 		np::ndarray x_data = np::zeros(py::make_tuple(1, 1, 1), dtype32);
 		((float*)(x_data.get_data()))[0] = 1.0f;
 		np::ndarray y_data = np::zeros(py::make_tuple(1, 1, 1), dtype32);
@@ -268,19 +268,16 @@ int main(int argc, char *argv[])
 
 		tfc.sess_.attr("run")(init_op);
 
-		py::list nodes_to_run;
-		nodes_to_run.append(temp);
-		nodes_to_run.append(loss);
-		nodes_to_run.append(train);
+		py::list nodes_to_run(py::make_tuple(y_out, loss, train));
 
 		py::dict feed_dict;
-		feed_dict[x_input] = x_data;
-		feed_dict[y_target] = y_data;
+		feed_dict[x_input_ph] = x_data;
+		feed_dict[y_target_ph] = y_data;
 
 		for(int i = 0; i < 10; ++i)
 		{
 			py::list output = py::extract<py::list>(tfc.sess_.attr("run")(nodes_to_run, feed_dict));
-			py::object y_out_obj = py::extract<py::object>(output[0]);			
+			py::object y_out_obj = py::extract<py::object>(output[0]);
 			const np::ndarray y_out = np::from_object(y_out_obj);
 			const float loss = py::extract<float>(output[1]);
 
