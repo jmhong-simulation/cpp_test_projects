@@ -195,7 +195,7 @@ int main(int argc, char *argv[])
 	pyw.sys_.attr("path").attr("append")("D:\\github-repository\\cpp_test_projects\\BoostPythonTests\\BoostPythonTests");
 
 	auto jm_module = py::import("JMModule");
-	jm_module.attr("test_func")();
+	//jm_module.attr("test_func")();
 
 	return 0;
 
