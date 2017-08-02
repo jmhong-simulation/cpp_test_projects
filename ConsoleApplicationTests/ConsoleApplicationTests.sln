@@ -11,6 +11,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GenericPointerTest", "Gener
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "JsonTest", "JsonTest\JsonTest.vcxproj", "{75D3802C-4A7E-43AC-94A9-6F163B299458}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Doodles", "Doodles\Doodles.vcxproj", "{815E0804-3671-4AB3-A542-5B0A2674152D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -51,6 +53,14 @@ Global
 		{75D3802C-4A7E-43AC-94A9-6F163B299458}.Release|x64.Build.0 = Release|x64
 		{75D3802C-4A7E-43AC-94A9-6F163B299458}.Release|x86.ActiveCfg = Release|Win32
 		{75D3802C-4A7E-43AC-94A9-6F163B299458}.Release|x86.Build.0 = Release|Win32
+		{815E0804-3671-4AB3-A542-5B0A2674152D}.Debug|x64.ActiveCfg = Debug|x64
+		{815E0804-3671-4AB3-A542-5B0A2674152D}.Debug|x64.Build.0 = Debug|x64
+		{815E0804-3671-4AB3-A542-5B0A2674152D}.Debug|x86.ActiveCfg = Debug|Win32
+		{815E0804-3671-4AB3-A542-5B0A2674152D}.Debug|x86.Build.0 = Debug|Win32
+		{815E0804-3671-4AB3-A542-5B0A2674152D}.Release|x64.ActiveCfg = Release|x64
+		{815E0804-3671-4AB3-A542-5B0A2674152D}.Release|x64.Build.0 = Release|x64
+		{815E0804-3671-4AB3-A542-5B0A2674152D}.Release|x86.ActiveCfg = Release|Win32
+		{815E0804-3671-4AB3-A542-5B0A2674152D}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
