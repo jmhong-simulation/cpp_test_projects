@@ -4,7 +4,8 @@
 #include <winsock2.h>
 #include <string>
 #include <iostream>
-#include "PointerStringConverter.h"
+#include "..\PointerStringConverter.h"
+#include "..\ProcessMemoryReadWrite.h"
 
 using namespace std;
 
@@ -124,14 +125,32 @@ int main(int argc, char **argv)
 
 	int variable_in_server = 1234;
 
-	cout << "Ptr in server " << &variable_in_server << endl;
+	// send process id to client
 
-	const string ptr_str = PointerStringConverter::pointer_to_string(&variable_in_server);
+	auto pid = GetCurrentProcessId();
+	cout << "Process ID " << pid << endl;
+	
+	PointerStringConverter conv;
+
+	auto pid_str = conv.value_to_string(pid);
+	server.sendMessage(pid_str);
+
+	// send pointer to client
+	cout << "Pointer to send " << &variable_in_server << endl;
+	auto ptr_str = conv.pointer_to_string(&variable_in_server);
 	server.sendMessage(ptr_str);
+	
+	// check result
+	cout << server.receiveMessage() << endl; // dummy message to sync
 
-	cout << server.receiveMessage() << endl;
+	cout << variable_in_server << endl; // check if this is updated as changed in client
 
-	cout << variable_in_server << endl;
+	// Naive pointer sending doesn't work
+	//cout << "Ptr in server " << &variable_in_server << endl;
+	//const string ptr_str = PointerStringConverter::pointer_to_string(&variable_in_server);
+	//server.sendMessage(ptr_str);
+	//cout << server.receiveMessage() << endl;
+	//cout << variable_in_server << endl;
 
 
 	return 0;

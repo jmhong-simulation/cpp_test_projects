@@ -4,7 +4,8 @@
 #include <winsock2.h>
 #include <iostream>
 #include <string>
-#include "PointerStringConverter.h"
+#include "..\PointerStringConverter.h"
+#include "..\ProcessMemoryReadWrite.h"
 
 using namespace std;
 
@@ -96,24 +97,48 @@ int main(int argc, char **argv)
 	
 	client.sendMessage("Message from client!*~");
 
-	const string strptr_from_server = client.receiveMessage();
-	int* ptr = nullptr;
-	ptr = PointerStringConverter::string_to_pointer<int>(strptr_from_server);
+	auto pid_str = client.receiveMessage();
+	auto ptr_str = client.receiveMessage();
 
-	cout << "Check in client " << ptr << endl;
-	
-	try {
-		cout << " " << *ptr << endl; // ERROR! don't know why!
-	}
-	catch (const char* msg)
-	{
-		cout << msg << endl;
-	}
+	PointerStringConverter conv;
+	auto pid = conv.string_to_value<DWORD>(pid_str);
+	cout << "Received pid " << pid << endl;
+
+	auto ptr = conv.string_to_pointer<int>(ptr_str);
+	cout << "Received ptr " << ptr << endl;
+
+	ProcessMemoryReadWrite pm;
+	pm.initialize(pid);
+
+	std::string str_temp = pm.read((void*)ptr, sizeof(int)); // we know this is integer
+
+	const int value_in_server = conv.string_to_value<int>(str_temp);
+
+	cout << value_in_server << " This should be equal to the value in server" << endl;
+
+	pm.write((void*)ptr, conv.value_to_string<int>(1024), sizeof(int));
+
+	client.sendMessage("Dummy");
+
+	// naive pointer communication doesn't work
+	//const string strptr_from_server = client.receiveMessage();
+	//int* ptr = nullptr;
+	//ptr = PointerStringConverter::string_to_pointer<int>(strptr_from_server);
+
+	//cout << "Check in client " << ptr << endl;
+	//
+	//try {
+	//	cout << " " << *ptr << endl; // ERROR! don't know why!
+	//}
+	//catch (const char* msg)
+	//{
+	//	cout << msg << endl;
+	//}
 
 
-	*ptr = 256;
+	//*ptr = 256;
 
-	client.sendMessage("dummy");
+	//client.sendMessage("dummy");
 
 	return 0;
 }
