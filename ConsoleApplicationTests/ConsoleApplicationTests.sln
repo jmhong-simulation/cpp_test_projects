@@ -21,6 +21,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PointerIPC_Client", "Pointe
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ReadProcessMemoryTest", "ReadProcessMemoryTest\ReadProcessMemoryTest.vcxproj", "{CC0934E3-B563-48F1-8876-D980BEEDF46C}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NamedParameters", "NamedParameters\NamedParameters.vcxproj", "{EDFFFA1A-6750-47CE-9A67-97CAFD5D9F64}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -101,6 +103,14 @@ Global
 		{CC0934E3-B563-48F1-8876-D980BEEDF46C}.Release|x64.Build.0 = Release|x64
 		{CC0934E3-B563-48F1-8876-D980BEEDF46C}.Release|x86.ActiveCfg = Release|Win32
 		{CC0934E3-B563-48F1-8876-D980BEEDF46C}.Release|x86.Build.0 = Release|Win32
+		{EDFFFA1A-6750-47CE-9A67-97CAFD5D9F64}.Debug|x64.ActiveCfg = Debug|x64
+		{EDFFFA1A-6750-47CE-9A67-97CAFD5D9F64}.Debug|x64.Build.0 = Debug|x64
+		{EDFFFA1A-6750-47CE-9A67-97CAFD5D9F64}.Debug|x86.ActiveCfg = Debug|Win32
+		{EDFFFA1A-6750-47CE-9A67-97CAFD5D9F64}.Debug|x86.Build.0 = Debug|Win32
+		{EDFFFA1A-6750-47CE-9A67-97CAFD5D9F64}.Release|x64.ActiveCfg = Release|x64
+		{EDFFFA1A-6750-47CE-9A67-97CAFD5D9F64}.Release|x64.Build.0 = Release|x64
+		{EDFFFA1A-6750-47CE-9A67-97CAFD5D9F64}.Release|x86.ActiveCfg = Release|Win32
+		{EDFFFA1A-6750-47CE-9A67-97CAFD5D9F64}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
