@@ -10,7 +10,7 @@ target = tf.placeholder(tf.float32, [None, 1])
 pp = (input, 1)
 print(type(pp))
 
-ka = {'inputs' : input, 'units' : 1, 'activation' : tf.nn.tanh}
+ka = {'inputs' : input, 'units' : 1, 'activation' : tf.nn.tanh, 'name' : 'temp_dense'}
 print(type(ka))
 
 def run_with_pos_key(positional, keywords, function):
@@ -41,11 +41,14 @@ train = tf.train.AdamOptimizer(1e-1).minimize(loss)
 x_input = np.ones((1, 1), 'f')
 y_target = np.ones((1, 1), 'f')
 
+#print([tensor.name for tensor in tf.get_default_graph().as_graph_def().node])
+
 init_op = tf.global_variables_initializer()
 sess.run(init_op)
 
 for i in range(0, 20):
-    y_out, lo, _ = sess.run([temp, loss, train], {input: x_input, target : y_target})
+    # temp = tf.get_default_graph().get_tensor_by_name('temp_dense/Tanh:0') # find by node name
+    y_out, lo, _ = sess.run([tf.get_default_graph().get_tensor_by_name('temp_dense/Tanh:0'), loss, train], {input: x_input, target : y_target})
     print(y_out, " ", lo)
 
 # data type check version
