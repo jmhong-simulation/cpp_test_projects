@@ -19,9 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{EDFFFA1A-6750-47CE-9A67-97CAFD5D9F64}</ProjectGuid>
+    <ProjectGuid>{28ABBBE5-ABA0-4B22-8B50-3A0F761979FF}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>NamedParameters</RootNamespace>
+    <RootNamespace>NestedClasses</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -133,7 +133,6 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
