@@ -16,7 +16,7 @@ int main()
 {
 	using namespace std;
 
-	Py_SetPythonHome(L"C:/Anaconda3/envs/py35tf1");
+	Py_SetPythonHome(L"C:/Anaconda3/envs/py35tf12");
 
 	Py_Initialize();
 	np::initialize();
@@ -31,7 +31,31 @@ int main()
 	// builtins! https://stackoverflow.com/questions/22674774/get-single-element-from-a-boostpythonobject-list-for-use-in-python-routine
 	// there are more of good examples
 	py::object print = py::import("__main__").attr("__builtins__").attr("print");
+	py::object type = py::import("__main__").attr("__builtins__").attr("type");
 	print("Hello, Python");
+
+	// accessing elements of np arrays
+	const auto shape = py::make_tuple(3, 2);
+	np::ndarray ae_np = np::zeros(shape, np::dtype::get_builtin<float>());
+	int count = 123;
+	for(int i = 0; i < shape[0]; ++i)
+		for (int j = 0; j < shape[1]; ++j)
+		{
+			ae_np[i][j] = (float)count++;
+		}
+
+	print(ae_np);
+	print(type(ae_np));
+
+	for (int i = 0; i < shape[0]; ++i)
+		for (int j = 0; j < shape[1]; ++j)
+		{
+			std::cout << py::extract<float>(ae_np[i][j]) << std::endl;
+		}
+
+	// tensorflow test
+	PyRun_SimpleString("import sys\n"
+		"sys.argv = ['']"); // Tensorflow requires this to be initialized
 
 	// examples from https://www.datacamp.com/community/tutorials/tensorflow-tutorial#gs.7CN1YdQ
 
