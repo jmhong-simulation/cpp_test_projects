@@ -37,7 +37,6 @@ namespace serializer
 			type_label_.caption(getShortTypeName<T>());
 			type_label_.text_align(align::right);
 			/*type_label_.fgcolor(nana::colors::black);*/
-			
 			//type_label_.bgcolor(nana::colors::white_smoke);
 
 			name_label_.caption(name_str);
@@ -177,5 +176,4 @@ namespace serializer
 			FATAL_ERROR("Operation for this type is not defined " << type);
 		}
 	}
-
 }

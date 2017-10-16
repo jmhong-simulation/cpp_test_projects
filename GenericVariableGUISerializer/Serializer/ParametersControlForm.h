@@ -60,16 +60,60 @@ namespace serializer
 			{
 				for (auto& group_itr : tab_itr.second->groups_)
 				{
-					for (auto& var_itr : group_itr.second->variables_)
-					{
-						cout << var_itr->name << endl;
-					}
+					addVariablesGroup(group_itr.second->variables_);
+
+					//for (auto& var_itr : group_itr.second->variables_)
+					//{
+					//	//cout << var_itr->name << endl;
+					//}
 				}
 			}
 		}
 
+		void addVariablesGroup(const vector<GenericVariableBase*>& vars_js)
+		{			
+			/*const string category_name = vars_js["category"].get<string>();
+			const vector<json> jsvars_vec = vars_js["variables"].get<vector<json>>();*/
+
+			const int compt_height = 20;
+			const int com0_width = 50;
+			const int com1_width = 150;
+			const int com2_width = 100;
+			const int com3_width = 100;
+			const int h_border = 10;
+			const int w_border = 10;
+			const int l_border = 10; // left border from window
+
+			for(int count = 0; count < vars_js.size(); ++count)
+			{
+				//const json var_js = jsvars_vec[count].get<json>();		// do not skip this step (do not use itr of jsvars_vec)
+
+				const string name = vars_js[count]->name;
+				const string type = vars_js[count]->type_name;
+				const string ptr_str = vars_js[count]->getStrAddress();
+
+				int x_pos = l_border;
+				const rectangle type_rect = rectangle{ x_pos, h_border + count * (compt_height + h_border), (unsigned)com0_width, (unsigned)compt_height };
+				x_pos += com0_width + w_border;
+				const rectangle label_rect = rectangle{ x_pos, h_border + count * (compt_height + h_border), (unsigned)com1_width, (unsigned)compt_height };
+				x_pos += com1_width + w_border;
+				const rectangle txt_rect = rectangle{ x_pos, h_border + count * (compt_height + h_border), (unsigned)com2_width, (unsigned)compt_height };
+				x_pos += com2_width + w_border;
+				const rectangle value_rect = rectangle{ x_pos, h_border + count * (compt_height + h_border), (unsigned)com3_width, (unsigned)compt_height };
+
+				WidgetBase *new_widget = getNewTextBoxWrapper(name, type, ptr_str, fm, type_rect, label_rect, txt_rect, value_rect);
+
+				widgets_.push_back(new_widget);
+			}
+			
+			const int total_width = l_border + com0_width + w_border + com1_width + w_border + com2_width + w_border + com3_width + l_border;
+			const int total_height = h_border + (compt_height + h_border)* vars_js.size() + h_border;
+
+			resize_and_move_to_center(nana::size(total_width, total_height));
+		}
+
 		//void addVariablesGroup(const json& vars_js)
-		//{			
+		//{
 		//	const string category_name = vars_js["category"].get<string>();
 		//	const vector<json> jsvars_vec = vars_js["variables"].get<vector<json>>();
 
@@ -82,7 +126,7 @@ namespace serializer
 		//	const int w_border = 10;
 		//	const int l_border = 10; // left border from window
 
-		//	for(int count = 0; count < jsvars_vec.size(); ++count)
+		//	for (int count = 0; count < jsvars_vec.size(); ++count)
 		//	{
 		//		const json var_js = jsvars_vec[count].get<json>();		// do not skip this step (do not use itr of jsvars_vec)
 
@@ -103,7 +147,7 @@ namespace serializer
 
 		//		widgets_.push_back(new_widget);
 		//	}
-		//	
+
 		//	const int total_width = l_border + com0_width + w_border + com1_width + w_border + com2_width + w_border + com3_width + l_border;
 		//	const int total_height = h_border + (compt_height + h_border)* jsvars_vec.size() + h_border;
 

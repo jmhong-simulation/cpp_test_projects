@@ -9,7 +9,6 @@ namespace serializer
 	class WidgetBase
 	{
 	public:
-
 		virtual ~WidgetBase() // virtual destructor is necessary to cleanup child classes under polymorphysm
 		{
 			//cout << __FUNCTION__ << endl;
