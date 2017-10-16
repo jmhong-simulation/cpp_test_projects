@@ -13,6 +13,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "JsonTest", "JsonTest\JsonTe
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "InheritanceTest", "InheritanceTest\InheritanceTest.vcxproj", "{00892052-65F7-4FFE-BD21-1BD249D75C0A}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GenericVariableGUISerializer", "..\GenericVariableGUISerializer\GenericVariableGUISerializer.vcxproj", "{87E24400-F5A9-497D-983A-BD5818320A0D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -61,6 +63,14 @@ Global
 		{00892052-65F7-4FFE-BD21-1BD249D75C0A}.Release|x64.Build.0 = Release|x64
 		{00892052-65F7-4FFE-BD21-1BD249D75C0A}.Release|x86.ActiveCfg = Release|Win32
 		{00892052-65F7-4FFE-BD21-1BD249D75C0A}.Release|x86.Build.0 = Release|Win32
+		{87E24400-F5A9-497D-983A-BD5818320A0D}.Debug|x64.ActiveCfg = Debug|x64
+		{87E24400-F5A9-497D-983A-BD5818320A0D}.Debug|x64.Build.0 = Debug|x64
+		{87E24400-F5A9-497D-983A-BD5818320A0D}.Debug|x86.ActiveCfg = Debug|Win32
+		{87E24400-F5A9-497D-983A-BD5818320A0D}.Debug|x86.Build.0 = Debug|Win32
+		{87E24400-F5A9-497D-983A-BD5818320A0D}.Release|x64.ActiveCfg = Release|x64
+		{87E24400-F5A9-497D-983A-BD5818320A0D}.Release|x64.Build.0 = Release|x64
+		{87E24400-F5A9-497D-983A-BD5818320A0D}.Release|x86.ActiveCfg = Release|Win32
+		{87E24400-F5A9-497D-983A-BD5818320A0D}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
