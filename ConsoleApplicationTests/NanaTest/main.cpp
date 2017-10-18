@@ -2,6 +2,8 @@
 #include <nana/gui/widgets/button.hpp>
 #include <nana/gui/widgets/textbox.hpp>
 #include <nana/gui/widgets/label.hpp>
+#include <nana/gui/widgets/group.hpp>
+#include <nana/gui/widgets/tabbar.hpp>
 
 #include "Scripting.h"
 
@@ -17,7 +19,7 @@ public:
 	string text_;	// text buffer
 	label lab_;
 
-	TextBoxWrapper(const form& _fm, const rectangle& _rect_label, const rectangle& _rect_textbox)
+	TextBoxWrapper(nana::window _fm, const rectangle& _rect_label, const rectangle& _rect_textbox)
 		: lab_(_fm, _rect_label), tbx_(_fm, _rect_textbox)
 	{
 		lab_.caption("int res_x");
@@ -96,10 +98,19 @@ int main()
 
 	cout << test_int << endl;
 
+	// form
 	form fm;
-	fm.caption(L"Hello, World!");
+	fm.caption("Hello, Nana Window!");
 
-	TextBoxWrapper tbx(fm, rectangle{ 20, 20, 60, 20 }, rectangle{ 100, 20, 150, 20 });
+
+	// group
+	
+	group grp(fm);
+	grp.caption("Group Example");
+
+	grp.move(rectangle{ 10, 50, 250, 100 });
+	grp.div("vert margin=10 <>><>");
+	TextBoxWrapper tbx(grp, rectangle{ 20, 20, 60, 20 }, rectangle{ 100, 20, 120, 20 }); // use nana:window type 
 
 	//textbox tbx(fm, rectangle{ 20, 20, 150, 30 });
 	//tbx.caption("Hello, Textbox");
@@ -109,9 +120,18 @@ int main()
 	//tbx.events().key_release(foo);
 
 	// add a button
-	button btn(fm, rectangle{ 20, 50, 150, 30 });
+	button btn(grp, rectangle{ 20, 50, 50, 30 });
 	btn.caption(L"Quit");
 	btn.events().click(API::exit);
+
+	// tab bars
+	tabbar<string> tbar;
+	tbar.create(fm);
+	tbar.push_back(("Tab1"));
+	tbar.push_back(("Tab2"));
+	tbar.move(rectangle{ 5, 5, 250, 20 });
+	tbar.attach(0, grp);
+	tbar.activated(0);
 
 	fm.show();
 	exec();

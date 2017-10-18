@@ -71,7 +71,7 @@ namespace serializer
 		}
 
 		void addVariablesGroup(const vector<GenericVariableBase*>& vars_js)
-		{			
+		{
 			/*const string category_name = vars_js["category"].get<string>();
 			const vector<json> jsvars_vec = vars_js["variables"].get<vector<json>>();*/
 
