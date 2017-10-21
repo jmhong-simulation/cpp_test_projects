@@ -19,6 +19,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TemplateSpecializationTest"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LambdaFunctionPointer", "LambdaFunctionPointer\LambdaFunctionPointer.vcxproj", "{82C03D28-2DB6-470A-94E2-E33DF0F89A8D}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GenericFunctionCall", "GenericFunctionCall\GenericFunctionCall.vcxproj", "{A64261AC-6C06-49E5-BD68-B0CA82B2E1C8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -91,6 +93,14 @@ Global
 		{82C03D28-2DB6-470A-94E2-E33DF0F89A8D}.Release|x64.Build.0 = Release|x64
 		{82C03D28-2DB6-470A-94E2-E33DF0F89A8D}.Release|x86.ActiveCfg = Release|Win32
 		{82C03D28-2DB6-470A-94E2-E33DF0F89A8D}.Release|x86.Build.0 = Release|Win32
+		{A64261AC-6C06-49E5-BD68-B0CA82B2E1C8}.Debug|x64.ActiveCfg = Debug|x64
+		{A64261AC-6C06-49E5-BD68-B0CA82B2E1C8}.Debug|x64.Build.0 = Debug|x64
+		{A64261AC-6C06-49E5-BD68-B0CA82B2E1C8}.Debug|x86.ActiveCfg = Debug|Win32
+		{A64261AC-6C06-49E5-BD68-B0CA82B2E1C8}.Debug|x86.Build.0 = Debug|Win32
+		{A64261AC-6C06-49E5-BD68-B0CA82B2E1C8}.Release|x64.ActiveCfg = Release|x64
+		{A64261AC-6C06-49E5-BD68-B0CA82B2E1C8}.Release|x64.Build.0 = Release|x64
+		{A64261AC-6C06-49E5-BD68-B0CA82B2E1C8}.Release|x86.ActiveCfg = Release|Win32
+		{A64261AC-6C06-49E5-BD68-B0CA82B2E1C8}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
