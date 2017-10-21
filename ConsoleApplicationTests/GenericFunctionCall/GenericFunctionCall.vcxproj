@@ -144,6 +144,7 @@
   <ItemGroup>
     <ClCompile Include="EventHandler.cpp" />
     <ClCompile Include="EventManager.cpp" />
+    <ClCompile Include="GUIConnector.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="TestGUI.cpp" />
     <ClCompile Include="TestWorker.cpp" />
@@ -151,6 +152,7 @@
   <ItemGroup>
     <ClInclude Include="EventHandler.h" />
     <ClInclude Include="EventManager.h" />
+    <ClInclude Include="GUIConnector.h" />
     <ClInclude Include="TestGUI.h" />
     <ClInclude Include="TestWorker.h" />
   </ItemGroup>

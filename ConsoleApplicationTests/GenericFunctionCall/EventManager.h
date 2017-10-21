@@ -3,6 +3,8 @@
 #include <iostream>
 #include <string>
 #include <functional>
+#include <vector>
+#include "EventHandler.h"
 
 namespace jm
 {
@@ -11,6 +13,9 @@ namespace jm
 	class EventManager
 	{
 	public:
+
+		vector<EventHandlerBase*> event_handlers;
+
 		EventManager()
 		{
 		}
@@ -19,15 +24,9 @@ namespace jm
 		{
 		}
 
-		//template<T_FUNCTION, T_WORKER>
-		//void registerHandler(const string& handler_name, T_FUNCTION func, T_WORKER& worker_ptr)
-		//{
+		void addNew(EventHandlerBase* new_event)
+		{
 
-		//}
-
-		//void registerEvent()
-		//{
-
-		//}
+		}
 	};
 }

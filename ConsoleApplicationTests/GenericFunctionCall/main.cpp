@@ -16,7 +16,7 @@ int main()
 
 	while (true)
 	{
-		if (worker.is_continue) worker.update();
+		if (worker.continue_flag) worker.update();
 		else cout << "Not working" << endl;
 
 		std::this_thread::sleep_for(100ms);

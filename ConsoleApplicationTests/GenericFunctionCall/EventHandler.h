@@ -9,27 +9,36 @@ namespace jm
 	class EventHandlerBase
 	{
 	public:
-		//virtual void invoke() = 0;
+		virtual void invoke() = 0;
+
+
 	};
 
-	template<class T_CLASS, class T_FUNCTION>
+	template<typename T_FUNCTION>
 	class EventHandler : public EventHandlerBase
 	{
 	public:
-		T_CLASS *class_ptr = nullptr;
 		T_FUNCTION func;
 
-		EventHandler(T_FUNCTION _func)
+		EventHandler(T_FUNCTION& _func)
 			: func(_func)
 		{}
 
 		~EventHandler()
 		{}
 
-		template<class ... Args>
-		void invoke(Args ... args)
+		void invoke()
 		{
-			(class_ptr->*func)(args ...);
+			func();
 		}
 	};
+
+	template<typename ... Args>
+	auto makeNewEventHandler(Args ... args)
+	{
+		auto bnd = bind(args ...);
+		auto *new_event_handler = new EventHandler<decltype(bnd)>(bnd);
+
+		return new_event_handler;
+	}
 }

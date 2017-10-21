@@ -27,6 +27,10 @@ public:
 		//btn.events().click(API::exit);
 		btn.events().click([]() {cout << "GUI Button Click" << endl; });
 
+		button btn2(fm, rectangle{ 20, 100, 100, 30 });
+		btn2.caption("Exit");
+		btn2.events().click(API::exit);
+
 		fm.show();
 		exec();
 	}

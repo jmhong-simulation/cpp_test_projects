@@ -4,6 +4,10 @@
 #include <iostream>
 #include "EventManager.h"
 #include "EventHandler.h"
+#include "GUIConnector.h"
+#include <iostream>
+#include <type_traits>
+#include <typeinfo>
 
 using namespace std;
 using namespace jm;
@@ -11,40 +15,23 @@ using namespace jm;
 class TestWorker
 {
 public:
-	bool is_continue = true;
+	bool continue_flag = true;
 
 	int count = 0;
 
 	EventManager event_manager;
 
-	template<class T_OWNER, class T_FUNC_PTR>
-	auto makeEventHandler(T_OWNER *owner_ptr, T_FUNC_PTR func_ptr)
-	{
-		auto new_handler = new EventHandler<TestWorker, decltype(func_ptr)>
-								(
-									func_ptr
-								);
-
-		new_handler->class_ptr = this;
-
-		return new_handler;
-	}
+	GUIConnector gui;
 
 	TestWorker()
 	{
-		// register 'event' to event handler
-		//event_manager.registerHandler("print", &TestWorker::print, this);
-		/*auto func = function<void(const string&)>([this](const string& input_string) {this->print(input_string);});
-		auto* new_handler = new EventHandler<function<void(const string&)>>(func);*/
+		//auto *new_event_handler = makeNewEventHandler(&TestWorker::changeContinueFlag, this);
+		auto *new_event_handler = makeNewEventHandler([&]() {cout << "Hello Lambda " << this << endl; changeContinueFlag(); });
+		new_event_handler->invoke();
 
-		/*auto* new_handler = new EventHandler<TestWorker, void(TestWorker::*)(const string&), const string>
-			(
-				&TestWorker::print
-			);*/
+		//TODO: event name, event time? "Button", "Continue/Pause"
 
-		auto* new_handler = makeEventHandler(this, &TestWorker::print);
-
-		new_handler->invoke(string("Hello print"));
+		event_manager.addNew(new_event_handler);
 	}
 
 	void update()
@@ -56,5 +43,17 @@ public:
 	void print(const string& str_to_print)
 	{
 		cout << "Worker prints : " << str_to_print << endl;
+	}
+
+	void print2(const string& str1, const string& str2)
+	{
+		cout << str1 << " " << str2 << endl;
+	}
+
+	void changeContinueFlag()
+	{
+		continue_flag = !continue_flag;
+
+		cout << __FUNCTION__ << endl;
 	}
 };

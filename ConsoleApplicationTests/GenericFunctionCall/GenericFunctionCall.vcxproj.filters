@@ -6,11 +6,13 @@
     <ClCompile Include="TestWorker.cpp" />
     <ClCompile Include="EventHandler.cpp" />
     <ClCompile Include="EventManager.cpp" />
+    <ClCompile Include="GUIConnector.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TestGUI.h" />
     <ClInclude Include="TestWorker.h" />
     <ClInclude Include="EventHandler.h" />
     <ClInclude Include="EventManager.h" />
+    <ClInclude Include="GUIConnector.h" />
   </ItemGroup>
 </Project>
