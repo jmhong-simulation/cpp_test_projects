@@ -28,6 +28,7 @@ namespace jm
 		virtual void update(const double& _value) { FATAL_ERROR };
 
 		virtual void invoke() = 0;
+		virtual string getTypeNameStr() = 0;
 	};
 
 	template<typename T_TYPE>
@@ -49,6 +50,11 @@ namespace jm
 		void invoke()
 		{
 			variable_ref = value_buffer;
+		}
+
+		string getTypeNameStr()
+		{
+			return string(typeid(variable_ref).name());
 		}
 	};
 

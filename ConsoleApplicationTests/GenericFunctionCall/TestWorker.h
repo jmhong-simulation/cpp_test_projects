@@ -35,14 +35,11 @@ public:
 
 		float test_float = 0.0f;
 		TextEditConnectorBase *tec = new TextEditConnector<decltype(test_float)>(test_float);
-		cout << "Before " << test_float << endl;
 		tec->update(1.0f);
-		cout << "Before " << test_float << endl;
 		tec->invoke();
-		cout << "After " << test_float << endl;
+		cout << tec->getTypeNameStr() << endl;
 
 		system("pause");
-
 	}
 
 	void update()
