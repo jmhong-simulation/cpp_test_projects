@@ -34,10 +34,19 @@ public:
 		event_manager.addNew(new_event_handler);
 
 		float test_float = 0.0f;
-		TextEditConnectorBase *tec = new TextEditConnector<decltype(test_float)>(test_float);
-		tec->update(1.0f);
-		tec->invoke();
-		cout << tec->getTypeNameStr() << endl;
+		TextEditConnector tec_float;
+		tec_float.event_handler = new VariableConnector<decltype(test_float)>(test_float);
+		tec_float.event_handler->update(1.0f);
+		tec_float.event_handler->invoke();
+		cout << tec_float.event_handler->getTypeNameStr() << endl;
+
+		ButtonConnector btc_continue;
+		btc_continue.event_handler = makeNewEventHandler([&]() {this->continue_flag = true; });
+		cout << btc_continue.event_handler->getTypeNameStr() << endl;
+
+		ButtonConnector btc_pause;
+		btc_pause.event_handler = makeNewEventHandler([&]() {this->continue_flag = false; });
+		cout << btc_pause.event_handler->getTypeNameStr() << endl;
 
 		system("pause");
 	}
