@@ -11,21 +11,58 @@ namespace jm
 
 	using namespace std;
 
-	class ButtonConnector
+	class GUIElementBase
 	{
 	public:
+		string tab_name;
+		string group_name;
+		string label_name;
+
+		enum Type { Button, TextEdit, TwoButtons } type;
+
 		EventHandlerBase *event_handler = nullptr;
+
+		GUIElementBase()
+		{
+		}
 	};
 
-	class TextEditConnector
+	class TextEditElement : public GUIElementBase
 	{
 	public:
-		EventHandlerBase *event_handler = nullptr;
+		TextEditElement()
+		{
+			type = Type::TextEdit;
+		}
+	};
+
+	class ButtonElement : public GUIElementBase
+	{
+	public:
+		ButtonElement()
+		{
+			type = Type::Button;
+		}
+	};
+
+	class TwoButtonsElement : public GUIElementBase
+	{
+	public:
+		string label_name2;
+		EventHandlerBase *event_handler_2 = nullptr;
+
+		TwoButtonsElement()
+		{
+			type = Type::TwoButtons;
+		}
 	};
 
 	class GUIConnector
 	{
 	public:
+
+		vector<GUIElementBase*> gui_elements;
+
 		GUIConnector()
 		{
 		}
