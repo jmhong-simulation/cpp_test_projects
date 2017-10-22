@@ -4,6 +4,8 @@
 #include <nana/gui/widgets/label.hpp>
 #include <nana/gui/widgets/group.hpp>
 #include <nana/gui/widgets/tabbar.hpp>
+#include <nana/gui/widgets/panel.hpp>
+#include <nana/gui/place.hpp>
 
 #include "Scripting.h"
 
@@ -104,8 +106,9 @@ int main()
 
 
 	// group
-	
-	group grp(fm);
+	panel<false> pnl(fm);
+
+	group grp(pnl);
 	grp.caption("Group Example");
 
 	grp.move(rectangle{ 10, 50, 250, 100 });
@@ -124,13 +127,20 @@ int main()
 	btn.caption(L"Quit");
 	btn.events().click(API::exit);
 
+	group grp2(pnl);
+	grp2.caption("2nd group");
+
+	grp2.move(rectangle{ 10, 150, 250, 100 });
+
+	pnl.move(rectangle{ 10, 10, 500, 500 });
+
 	// tab bars
 	tabbar<string> tbar;
 	tbar.create(fm);
 	tbar.push_back(("Tab1"));
 	tbar.push_back(("Tab2"));
 	tbar.move(rectangle{ 5, 5, 250, 20 });
-	tbar.attach(0, grp);
+	tbar.attach(0, pnl);
 	tbar.activated(0);
 
 	fm.show();
