@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="fmod_test.cpp">
+    <ClCompile Include="fmod_cpp_context.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
